@@ -73,7 +73,6 @@ void _mon_putc (char c);
 void __ISR(_TIMER_1_VECTOR, IPL7SOFT) Timer1Handler(void);
 
 //variables
-uint8_t screen = 0;
 uint8_t oldScreen = 3;
 uint8_t ledState = 0; //1 = on
 uint8_t readData = 0;
@@ -89,6 +88,15 @@ uint16_t oyc;
 uint16_t valueu;
 uint16_t values;
 uint8_t rad = 8; //circle radius
+
+enum screen_t
+{
+    MAIN,
+    JSTICK,
+    TEMP
+};
+
+enum screen_t screen;
 
 #endif	/* LAB08_H */
 

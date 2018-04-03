@@ -14,7 +14,7 @@
 
 static void screen_task()
 {
-  if (screen == 0)
+  if (screen == JSTICK)
   {
     //        TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
     //        TFT_DrawString(10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
@@ -83,6 +83,7 @@ static void screen_task()
 void main(void)
 {
 
+  screen = MAIN;
 
   MCU_initialize();
   SPI_Init();
@@ -130,42 +131,33 @@ void main(void)
       screen = 2;
     }
 
-    screen_task();
-
     switch (screen) {
-    case 0: //main sceen
-      //Nothing
-      break;
-    case 1: //led screen
+    case MAIN: //main sceen
       if (oldScreen != screen)
       {
         TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
-        TFT_DrawRectangle(79, 150, 81, 100, TFT_BLACK); //making the led picture
-        TFT_DrawRectangle(70, 249, 90, 10, TFT_BLACK);
-        TFT_DrawVLine(90, 258, 60, TFT_BLACK);
-        TFT_DrawVLine(150, 258, 40, TFT_BLACK);
-        TFT_DrawCircle(119, 150, 40, TFT_BLACK);
-      }
-      if (ledState == 0)
-      {
-        TFT_FillCircle(119, 150, 39, TFT_DARKGREEN); //clear led design
-        TFT_FillRectangle(80, 150, 79, 97, TFT_DARKGREEN);
-        TFT_FillRectangle(71, 250, 88, 8, TFT_DARKGREEN);
-      } else if (ledState == 1)
-      {
-        TFT_FillCircle(119, 150, 39, TFT_GREEN); //fill the led with red
-        TFT_FillRectangle(80, 150, 79, 97, TFT_GREEN);
-        TFT_FillRectangle(71, 249, 88, 9, TFT_GREEN);
+        TFT_DrawString(10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
+        TFT_DrawString(10, 135, "Lab 7", TFT_YELLOW, TFT_BLUE, 2);
+        TFT_DrawString(10, 160, "Jordan Hartung", TFT_GREEN, TFT_BLUE, 2);
+        TFT_DrawString(10, 200, "Jeremy Zacharia", TFT_PURPLE, TFT_BLUE, 2);
       }
       break;
-      //                 case 2:
-      //                     sprintf(message, "X: %4d", )
-      //                     tft_DrawString(10,100, "")
+    case JSTICK: //led screen
+      //Taken care of in screen_task()
+      if (oldScreen != screen)
+      {
+        TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE); //Clear
+      }
+      break;
 
+    case TEMP:
+
+      break;
     }
-
     oldScreen = screen;
 
+    /******* TASKS *******/
+    screen_task();
 
   }
 

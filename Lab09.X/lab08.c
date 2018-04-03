@@ -38,20 +38,20 @@ void main(void)
   while (1)
   {
 
-    readData = I2C1_ReadRegister(0x20, 0x09);
-    ledOnBtn = (readData >> 7) & (0b00000001);
-    ledOffBtn = (readData >> 6) & (0b00000001);
-
-    if (((ledOffBtn == 1 && ledOnBtn == 1) || ledOffBtn == 1) && ledState == 1)
-    {
-      I2C1_WriteRegister(0x20, 0x0A, 0b00000000);
-      ledState = 0;
-    }
-    else if (ledOnBtn == 1 && ledOffBtn == 0 && ledState == 0)
-    {
-      I2C1_WriteRegister(0x20, 0x0A, 0b00100000);
-      ledState = 1;
-    }
+//    readData = I2C1_ReadRegister(0x20, 0x09);
+//    ledOnBtn = (readData >> 7) & (0b00000001);
+//    ledOffBtn = (readData >> 6) & (0b00000001);
+//
+//    if (((ledOffBtn == 1 && ledOnBtn == 1) || ledOffBtn == 1) && ledState == 1)
+//    {
+//      I2C1_WriteRegister(0x20, 0x0A, 0b00000000);
+//      ledState = 0;
+//    }
+//    else if (ledOnBtn == 1 && ledOffBtn == 0 && ledState == 0)
+//    {
+//      I2C1_WriteRegister(0x20, 0x0A, 0b00100000);
+//      ledState = 1;
+//    }
 
 
     TOUCH_GetTouchPoints();

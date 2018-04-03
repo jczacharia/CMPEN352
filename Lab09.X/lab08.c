@@ -16,66 +16,63 @@ static void screen_task()
 {
   if (screen == 0)
   {
-    if (oldScreen != screen)
+    //        TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
+    //        TFT_DrawString(10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
+    //        TFT_DrawString(10, 135, "Lab 7", TFT_YELLOW, TFT_BLUE, 2);
+    //        TFT_DrawString(10, 160, "Jordan Hartung", TFT_GREEN, TFT_BLUE, 2);
+    //        TFT_DrawString(10, 200, "Jeremey Zacharia", TFT_PURPLE, TFT_BLUE, 2);
+    //joystick display code
+    AD1CHSbits.CH0SA = 4; //A1 up and down
+    AD1CON1bits.SAMP = 1;
+    while (!AD1CON1bits.DONE)
     {
-      //        TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
-      //        TFT_DrawString(10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
-      //        TFT_DrawString(10, 135, "Lab 7", TFT_YELLOW, TFT_BLUE, 2);
-      //        TFT_DrawString(10, 160, "Jordan Hartung", TFT_GREEN, TFT_BLUE, 2);
-      //        TFT_DrawString(10, 200, "Jeremey Zacharia", TFT_PURPLE, TFT_BLUE, 2);
-      //joystick display code
-      AD1CHSbits.CH0SA = 4; //A1 up and down
-      AD1CON1bits.SAMP = 1;
-      while (!AD1CON1bits.DONE)
-      {
-      }
-      valueu = ADC1BUF0;
-
-      AD1CHSbits.CH0SA = 2; //A0 left and right
-      AD1CON1bits.SAMP = 1;
-      while (!AD1CON1bits.DONE)
-      {
-      }
-      values = ADC1BUF0;
-
-
-      y = valueu / 3.196; //scale
-      x = values / 4.2625; //scale
-
-      if ((x - rad) < 9) // keep circle on screen
-      {
-        xc = 9;
-      } else if ((x + rad) > 231)
-      {
-        xc = 231;
-      } else
-      {
-        xc = x;
-      }
-
-      if ((y - rad) < 89)
-      {
-        yc = 89;
-      } else if ((y + rad) > 311)
-      {
-        yc = 311;
-      } else
-      {
-        yc = y;
-      }
-      if ((oxc != xc) || (oyc != yc))
-      {
-        TFT_FillCircle(oxc, oyc, rad, TFT_BLUE);
-        TFT_DrawCircle(xc, yc, rad, TFT_YELLOW);
-      }
-      oxc = xc;
-      oyc = yc;
-
-      sprintf(message, "X: %d, Y: %d", xc, yc);
-      TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
-
-      printf("Val: %d\t%d\t%d\t%d\n", valueu, values, x, y);
     }
+    valueu = ADC1BUF0;
+
+    AD1CHSbits.CH0SA = 2; //A0 left and right
+    AD1CON1bits.SAMP = 1;
+    while (!AD1CON1bits.DONE)
+    {
+    }
+    values = ADC1BUF0;
+
+
+    y = valueu / 3.196; //scale
+    x = values / 4.2625; //scale
+
+    if ((x - rad) < 9) // keep circle on screen
+    {
+      xc = 9;
+    } else if ((x + rad) > 231)
+    {
+      xc = 231;
+    } else
+    {
+      xc = x;
+    }
+
+    if ((y - rad) < 89)
+    {
+      yc = 89;
+    } else if ((y + rad) > 311)
+    {
+      yc = 311;
+    } else
+    {
+      yc = y;
+    }
+    if ((oxc != xc) || (oyc != yc))
+    {
+      TFT_FillCircle(oxc, oyc, rad, TFT_BLUE);
+      TFT_DrawCircle(xc, yc, rad, TFT_YELLOW);
+    }
+    oxc = xc;
+    oyc = yc;
+
+    sprintf(message, "X: %d, Y: %d", xc, yc);
+    TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
+
+    printf("Val: %d\t%d\t%d\t%d\n", valueu, values, x, y);
   }
 }
 

@@ -45,6 +45,8 @@
 // Includes
 #include <xc.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #define _SUPPRESS_PLIB_WARNING
 #include <plib.h>
 #include "spi.h"
@@ -87,15 +89,17 @@ uint16_t oxc;
 uint16_t oyc;
 uint16_t valueu;
 uint16_t values;
+double temp_sense;
 uint8_t rad = 8; //circle radius
 
+
+//Screen States
 enum screen_t
 {
     MAIN,
     JSTICK,
     TEMP
 };
-
 enum screen_t screen;
 
 #endif	/* LAB08_H */

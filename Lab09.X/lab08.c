@@ -24,16 +24,12 @@ static void screen_task()
     //joystick display code
     AD1CHSbits.CH0SA = 4; //A1 up and down
     AD1CON1bits.SAMP = 1;
-    while (!AD1CON1bits.DONE)
-    {
-    }
+    while (!AD1CON1bits.DONE);
     valueu = ADC1BUF0;
 
     AD1CHSbits.CH0SA = 2; //A0 left and right
     AD1CON1bits.SAMP = 1;
-    while (!AD1CON1bits.DONE)
-    {
-    }
+    while (!AD1CON1bits.DONE);
     values = ADC1BUF0;
 
 
@@ -73,6 +69,14 @@ static void screen_task()
     TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
 
     printf("Val: %d\t%d\t%d\t%d\n", valueu, values, x, y);
+  } else if (screen == TEMP)
+  {
+    AD1CHSbits.CH0SA = 8; //Temp
+    AD1CON1bits.SAMP = 1;
+    while (!AD1CON1bits.DONE);
+    temp_sense = (double)ADC1BUF0;
+    sprintf(message, "Temp in F: %.02f", (temp_sense / 10.0)*(9.0 / 5.0) + 32.0);
+    TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
   }
 }
 
@@ -95,8 +99,8 @@ void main(void)
   TFT_FillRectangle(80, 0, 75, 80, TFT_LIGHTGREY);
   TFT_FillRectangle(160, 0, 80, 80, TFT_LIGHTGREY);
   TFT_DrawString(10, 30, "MAIN", TFT_BLACK, TFT_LIGHTGREY, 2);
-  TFT_DrawString(98, 20, "JOY", TFT_BLACK, TFT_LIGHTGREY, 2); 
-  TFT_DrawString(88, 38, "STICK", TFT_BLACK, TFT_LIGHTGREY, 2); 
+  TFT_DrawString(98, 20, "JOY", TFT_BLACK, TFT_LIGHTGREY, 2);
+  TFT_DrawString(88, 38, "STICK", TFT_BLACK, TFT_LIGHTGREY, 2);
   TFT_DrawString(176, 30, "TEMP", TFT_BLACK, TFT_LIGHTGREY, 2);
 
 
@@ -152,7 +156,12 @@ void main(void)
       break;
 
     case TEMP:
+      //Taken care of in screen_task()
+      if (oldScreen != screen)
+      {
 
+        TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE); //Clear
+      }
       break;
     }
     oldScreen = screen;
@@ -176,6 +185,7 @@ void MCU_initialize(void)
 {
 
   // Use multi-vector interrupt mode
+
   INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
 
   // Configure oscillators
@@ -253,6 +263,7 @@ void MCU_initialize(void)
 
 void _mon_putc (char c)
 {
+
   while (U1STAbits.UTXBF);  // wait for transmit buffer to be available
   U1TXREG = c;
 } // end _mon_putc()

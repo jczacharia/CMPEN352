@@ -46,6 +46,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #define _SUPPRESS_PLIB_WARNING
 #include <plib.h>
@@ -66,7 +67,7 @@
 
 /*************** TIMER ***************/
 uint16_t mscount, secondcount;
-
+bool sample_temp;
 
 
 // Function prototypes
@@ -81,12 +82,8 @@ uint8_t readData = 0;
 uint8_t ledOnBtn = 0;
 uint8_t ledOffBtn = 0;
 char message [17];
-uint16_t x;
-uint16_t y;
-uint16_t xc;
-uint16_t yc;
-uint16_t oxc;
-uint16_t oyc;
+int x;
+int y;
 uint16_t valueu;
 uint16_t values;
 double temp_sense;

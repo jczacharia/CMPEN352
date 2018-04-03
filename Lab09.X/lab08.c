@@ -95,8 +95,9 @@ void main(void)
   TFT_FillRectangle(80, 0, 75, 80, TFT_LIGHTGREY);
   TFT_FillRectangle(160, 0, 80, 80, TFT_LIGHTGREY);
   TFT_DrawString(10, 30, "MAIN", TFT_BLACK, TFT_LIGHTGREY, 2);
-  TFT_DrawString(88, 30, "23008", TFT_BLACK, TFT_LIGHTGREY, 2);
-  TFT_DrawString(165, 30, "LIS3DH", TFT_BLACK, TFT_LIGHTGREY, 2);
+  TFT_DrawString(98, 20, "JOY", TFT_BLACK, TFT_LIGHTGREY, 2); 
+  TFT_DrawString(88, 38, "STICK", TFT_BLACK, TFT_LIGHTGREY, 2); 
+  TFT_DrawString(176, 30, "TEMP", TFT_BLACK, TFT_LIGHTGREY, 2);
 
 
 

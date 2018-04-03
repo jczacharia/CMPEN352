@@ -45,6 +45,9 @@
 // Includes
 #include <xc.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 #define _SUPPRESS_PLIB_WARNING
 #include <plib.h>
 #include "spi.h"
@@ -64,7 +67,7 @@
 
 /*************** TIMER ***************/
 uint16_t mscount, secondcount;
-
+bool sample_temp;
 
 
 // Function prototypes
@@ -79,23 +82,21 @@ uint8_t readData = 0;
 uint8_t ledOnBtn = 0;
 uint8_t ledOffBtn = 0;
 char message [17];
-uint16_t x;
-uint16_t y;
-uint16_t xc;
-uint16_t yc;
-uint16_t oxc;
-uint16_t oyc;
+int x, xp;
+int y, yp;
 uint16_t valueu;
 uint16_t values;
+double temp_sense;
 uint8_t rad = 8; //circle radius
 
+
+//Screen States
 enum screen_t
 {
     MAIN,
     JSTICK,
     TEMP
 };
-
 enum screen_t screen;
 
 #endif	/* LAB08_H */

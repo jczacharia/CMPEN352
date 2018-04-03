@@ -38,13 +38,16 @@ static void screen_task()
           values = ADC1BUF0;
 
 
-          y = map(y, 0, 1023, 89, 311); //scale
-          x = map(x, 0, 1023, 9, 231); //scale
+          y = map((1023 - valueu), 0, 1023, 89, 311); //scale
+          x = map(values, 0, 1023, 9, 231); //scale
 
-          TFT_FillCircle(x, y, rad, TFT_BLUE);
+          TFT_FillCircle(xp, yp, rad, TFT_BLUE);
           TFT_DrawCircle(x, y, rad, TFT_YELLOW);
+          
+          xp = x;
+          yp = y;
 
-          sprintf (message, "X: %d, Y: %d", x, y);
+          sprintf (message, "X: %d.0, Y: %d.0", x, y);
           TFT_DrawString (10, 100, message, TFT_BLACK, TFT_BLUE, 2);
 
           printf ("Val: %d\t%d\t%d\t%d\n", valueu, values, x, y);
@@ -160,8 +163,7 @@ main (void)
 // Initialization code for the application
 //------------------------------------------------------------------------------
 
-void
-MCU_initialize (void)
+void MCU_initialize (void)
 {
 
      // Use multi-vector interrupt mode

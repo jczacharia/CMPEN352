@@ -97,15 +97,8 @@ void main(void)
 			TFT_DrawString(10, 160, "Jordan Hartung", TFT_GREEN, TFT_BLUE, 2);
 			TFT_DrawString(10, 200, "Jeremy Zacharia", TFT_PURPLE, TFT_BLUE, 2);
 		} else if (screen == JSTICK) {
-			AD1CHSbits.CH0SA = 4; //A1 up and down
-			AD1CON1bits.SAMP = 1;
-			while (!AD1CON1bits.DONE);
-			valueu = ADC1BUF0;
-
-			AD1CHSbits.CH0SA = 2; //A0 left and right
-			AD1CON1bits.SAMP = 1;
-			while (!AD1CON1bits.DONE);
-			values = ADC1BUF0;
+			valueu = ADC_sample(4);
+			values = ADC_sample(2);
 
 			y = map(1023 - valueu, 0, 1023, 89, 311); //scale
 			x = map(values, 0, 1023, 9, 231); //scale
@@ -121,10 +114,7 @@ void main(void)
 
 			printf("Val: %d\t%d\t%d\t%d\n", valueu, values, x, y);
 		} else if (screen == TEMP && sample_temp == true) {
-			AD1CHSbits.CH0SA = 8; //Temp
-			AD1CON1bits.SAMP = 1;
-			while (!AD1CON1bits.DONE);
-			temp_sense = (double) ADC1BUF0;
+			temp_sense = (double)ADC_sample(8);
 
 			sprintf(message, "Temp in F: %.02f", (temp_sense / 10.0)*(9.0 / 5.0) + 32.0);
 			TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
@@ -194,30 +184,7 @@ void MCU_initialize(void)
 	sample_temp = true;
 	screen = MAIN;
 
-	/*
-	 * ADC Configuration
-	 */
-	AD1PCFGbits.PCFG2 = 0; //AN8
-	AD1PCFGbits.PCFG4 = 0; //AN4
-	AD1PCFGbits.PCFG8 = 0; //AN2
-	TRISBbits.TRISB2 = 1; //AN8
-	TRISBbits.TRISB4 = 1; //AN4
-	TRISBbits.TRISB8 = 1; //AN1
-	//reset all ADC configuration bits
-	AD1CON1 = 0;
-	AD1CON2 = 0;
-	AD1CON3 = 0;
-	//begin ADC configuration
-	AD1CON1bits.FORM = 0; //16-bit integer
-	AD1CON1bits.SSRC = 7; //sample clock is auto convert
-	AD1CON2bits.VCFG = 0; //Vref+ = AVdd; Vref- = AVss
-	AD1CON2bits.CSCNA = 0; //do not scan inputs
-	AD1CON2bits.BUFM = 0; //one 16-word buffer fill
-	AD1CON2bits.ALTS = 0; //always use MUXA
-	AD1CON3bits.ADRC = 0; //ADC clock = PBCLK
-	AD1CON3bits.SAMC = 31; //sample time = max, 31 * Tad
-	AD1CON3bits.ADCS = 63; //Tad = 128 * Tpb = 12.8us @ PBCLK = 10 MHZ
-	AD1CON1bits.ADON = 1; //ADC on
+	ADC_init();
 
 	/*
 	 *  Enable global interrupts

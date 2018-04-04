@@ -54,6 +54,7 @@
 #include "tft.h"
 #include "delay.h"
 #include "touch.h"
+#include "adc.h"
 
 
 #include "math.h"
@@ -88,7 +89,7 @@ enum screen_t {
 };
 
 /*
- * variables
+ * Global variables
  */
 char message[17];
 int x, xp; // xp = y previous; for state

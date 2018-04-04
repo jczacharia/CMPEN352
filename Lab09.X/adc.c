@@ -41,8 +41,10 @@ void ADC_init()
 
 uint16_t ADC_sample(uint8_t pin)
 {
+	volatile uint16_t f;
 	AD1CHSbits.CH0SA = pin; //A1 up and down
 	AD1CON1bits.SAMP = 1;
 	while (!AD1CON1bits.DONE);
-	return ADC1BUF0;
+	f = ADC1BUF0;
+	return f;
 }

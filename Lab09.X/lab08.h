@@ -97,10 +97,17 @@ int x, xp; // xp = y previous; for state
 int y, yp; // yp = y previous; for state
 uint16_t valueu;
 uint16_t values;
-double temp_sense;
+uint16_t temp_sense;
 uint8_t rad; //circle radius
 enum screen_t screen; //screen states
 enum screen_t old_screen;
+
+struct dataPoints
+{
+    uint16_t x, y;
+};
+uint16_t num;
+struct dataPoints data[240];
 
 #endif	/* LAB08_H */
 

@@ -51,7 +51,7 @@ void main(void)
 	TFT_DrawString(88, 38, "STICK", TFT_BLACK, TFT_LIGHTGREY, 2);
 	TFT_DrawString(176, 30, "TEMP", TFT_BLACK, TFT_LIGHTGREY, 2);
 
-
+	uint8_t temp_s = 0;
 	/*
 	 * Infinite While Loop:
 	 * 
@@ -82,6 +82,12 @@ void main(void)
 		 */
 		if (old_screen != screen) {
 			TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
+			if (screen == TEMP) {
+				uint16_t i;
+				for (i = 0; i < num; i++) {
+					TFT_DrawPixel(data[i].x, data[i].y, TFT_YELLOW);
+				}
+			}
 			old_screen = screen;
 		}
 
@@ -114,11 +120,20 @@ void main(void)
 
 			printf("Val: %d\t%d\t%d\t%d\n", valueu, values, x, y);
 		} else if (screen == TEMP && sample_temp == true) {
-			temp_sense = (double)ADC_sample(8);
-
-			sprintf(message, "Temp in F: %.02f", (temp_sense / 10.0)*(9.0 / 5.0) + 32.0);
-			TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
-
+			
+			temp_sense = (ADC_sample(8)*3.3 / 1024.0 - .5) / .01;
+			
+			printf("\n\nTem %d\r\n", temp_sense);
+			sprintf(message, "Temp in F: %.02f", (temp_sense)*(9.0 / 5.0) + 32.0);
+			uint8_t temp_sc = map(temp_sense, 0, 100, 80, 320);
+			printf("\n\nTessm %d\r\n", temp_sc);
+			TFT_DrawString(10, 150, message, TFT_BLACK, TFT_BLUE, 2);
+			TFT_DrawString(10, 80, "100", TFT_BLACK, TFT_BLUE, 2);
+			TFT_DrawString(10, 305, "0", TFT_BLACK, TFT_BLUE, 2);
+			
+			data[num].x= temp_s;
+			data[num++].y = 320 - temp_sc;
+			TFT_DrawPixel(temp_s++, 320 - temp_sc, TFT_YELLOW);
 			sample_temp = false;
 		}
 	}
@@ -182,7 +197,8 @@ void MCU_initialize(void)
 	old_screen = 3;
 	mscount = secondcount = 0;
 	sample_temp = true;
-	screen = MAIN;
+	screen = TEMP;
+	num = 0;
 
 	ADC_init();
 
@@ -222,10 +238,11 @@ void __ISR(_TIMER_1_VECTOR, IPL7SOFT) Timer1Handler(void)
 	mscount++;
 	if (mscount == 1000) {
 		secondcount++;
-		if (secondcount % 4 == 0) {
-			// every 4 seconds
-			sample_temp = true;
-		}
+		//		if (secondcount % 2 == 0) {
+		//			// every 4 seconds
+		//			sample_temp = true;
+		//		}
+		sample_temp = true;
 		mscount = 0;
 	}
 }

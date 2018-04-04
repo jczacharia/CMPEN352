@@ -1,14 +1,14 @@
 //------------------------------------------------------------------------------
-// File:          lab08.c
+// File:          lab09.c
 // Written By:    Jordan Hartung, Jeremy Zacharia
 // Date Created:  3/28/2018
-// Description:   Test touch communication to touch screen
+// Description:   Joy Stick and Temp
 // Compiler:	  XC32 v1.34
 // Target:        PIC32MX340F512H
 // Schematic(s):  Drawing L08-01
 //
 // Revision History (date, initials, description)
-//   3/28/2018, jth5342, initial design
+//   4/04/2018, jmz5234, Joy Stick and Temp function
 //------------------------------------------------------------------------------
 #include "lab08.h"
 

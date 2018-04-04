@@ -2,10 +2,10 @@
 // File:          lab08.h
 // Written By:    Jordan Hartung, Jeremy Zacharia
 // Date Created:  20 Jan 15
-// Description:   Test touch communication to touch screen
+// Description:   Joy Stick and Temp
 // Compiler:	  XC32 v1.34
 // Target:        PIC32MX340F512H
-// Schematic(s):  Drawing L07-01
+// Schematic(s):  Drawing Lab9
 //
 // Revision History (date, initials, description)
 //   9 Sep 15, egw100, Updated for EE 316 FA 15
@@ -14,6 +14,7 @@
 //   27 Feb 18, jth5342, added lab05 requirements
 //   3/14/2018, jth5342, added CS and libraries for tft and spi
 //   3/28/2018  jth5342,jmz5234, added I2C function
+//   4/04/2018  jmz5234, added Joystick and Temp function
 //------------------------------------------------------------------------------
 #ifndef LAB08_H
 #define	LAB08_H

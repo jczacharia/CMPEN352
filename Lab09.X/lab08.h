@@ -81,7 +81,7 @@ uint8_t ledState = 0; //1 = on
 uint8_t readData = 0;
 uint8_t ledOnBtn = 0;
 uint8_t ledOffBtn = 0;
-char message [17];
+char message[17];
 int x, xp;
 int y, yp;
 uint16_t valueu;

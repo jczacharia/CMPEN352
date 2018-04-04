@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------
 #include "lab08.h"
 
-static long map (long x, long in_min, long in_max, long out_min, long out_max)
+static long map(long x, long in_min, long in_max, long out_min, long out_max)
 {
      return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
@@ -38,12 +38,12 @@ static void screen_task()
           values = ADC1BUF0;
 
 
-          y = map((1023 - valueu), 0, 1023, 89, 311); //scale
+          y = map(1023 - valueu, 0, 1023, 89, 311); //scale
           x = map(values, 0, 1023, 9, 231); //scale
 
           TFT_FillCircle(xp, yp, rad, TFT_BLUE);
           TFT_DrawCircle(x, y, rad, TFT_YELLOW);
-          
+
           xp = x;
           yp = y;
 
@@ -67,8 +67,7 @@ static void screen_task()
 // Function: main()
 //------------------------------------------------------------------------------
 
-void
-main (void)
+void main (void)
 {
 
      MCU_initialize ();
@@ -124,7 +123,7 @@ main (void)
                {
                     TFT_FillRectangle (0, 80, 240, 240, TFT_BLUE);
                     TFT_DrawString (10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
-                    TFT_DrawString (10, 135, "Lab 7", TFT_YELLOW, TFT_BLUE, 2);
+                    TFT_DrawString (10, 135, "Lab 9", TFT_YELLOW, TFT_BLUE, 2);
                     TFT_DrawString (10, 160, "Jordan Hartung", TFT_GREEN, TFT_BLUE, 2);
                     TFT_DrawString (10, 200, "Jeremy Zacharia", TFT_PURPLE, TFT_BLUE, 2);
                }
@@ -190,9 +189,6 @@ void MCU_initialize (void)
      IFS0bits.T1IF = 0; // Clear interrupt flag
      IEC0bits.T1IE = 1; // Enable interrupt
      T1CONbits.ON = 1; // Enable timer
-
-
-
 
 
      //TIMER4 @ 1ms

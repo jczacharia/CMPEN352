@@ -30,7 +30,7 @@ void main(void)
 {
 
 	/*
-	 * Init
+	 * Initialize Code
 	 */
 	MCU_initialize();
 	SPI_Init();
@@ -38,9 +38,9 @@ void main(void)
 	TOUCH_Init();
 
 	/*
-	 * Configure TFT 
-	 * -background 
-	 * -static buttons
+	 * Configure TFT:
+	 *	background 
+	 *	static buttons
 	 */
 	TFT_FillRectangle(0, 0, 240, 320, TFT_BLUE); //background color
 	TFT_FillRectangle(0, 0, 75, 80, TFT_LIGHTGREY);
@@ -51,6 +51,17 @@ void main(void)
 	TFT_DrawString(88, 38, "STICK", TFT_BLACK, TFT_LIGHTGREY, 2);
 	TFT_DrawString(176, 30, "TEMP", TFT_BLACK, TFT_LIGHTGREY, 2);
 
+
+	/*
+	 * Infinite While Loop:
+	 * 
+	 * Get touch coordinates
+	 * Clear screen on screen change
+	 * Screen task for appropriate screen state
+	 *	1. Main
+	 *	2. Joy Stick
+	 *	3. Temperature
+	 */
 	while (1) {
 
 		/*
@@ -58,46 +69,34 @@ void main(void)
 		 */
 		TOUCH_GetTouchPoints();
 		if (touch_x > 0 && touch_x < 75 && touch_y > 0 && touch_y < 80) {
-			screen = 0;
+			screen = MAIN;
 		} else if (touch_x > 80 && touch_x < 155 && touch_y > 0 && touch_y < 80) {
-			screen = 1;
+			screen = JSTICK;
 		} else if (touch_x > 160 && touch_x < 240 && touch_y > 0 && touch_y < 80) {
-			screen = 2;
+			screen = TEMP;
 		}
 
-		switch (screen) {
-		case MAIN:
-			if (oldScreen != screen) {
-				TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
-				TFT_DrawString(10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
-				TFT_DrawString(10, 135, "Lab 9", TFT_YELLOW, TFT_BLUE, 2);
-				TFT_DrawString(10, 160, "Jordan Hartung", TFT_GREEN, TFT_BLUE, 2);
-				TFT_DrawString(10, 200, "Jeremy Zacharia", TFT_PURPLE, TFT_BLUE, 2);
-			}
-			break;
-		case JSTICK:
-			//Taken care of in screen_task()
-			if (oldScreen != screen) {
-				TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE); //Clear
-			}
-			break;
-
-		case TEMP:
-			//Taken care of in screen_task()
-			if (oldScreen != screen) {
-
-				TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE); //Clear
-			}
-			break;
-		}
-		oldScreen = screen;
 
 		/*
+		 * Clear screen on screen state change
+		 */
+		if (old_screen != screen) {
+			TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
+			old_screen = screen;
+		}
+
+
+		/*
+		 * Loop once through MAIN
 		 * Continuous loop through JSTICK
 		 * Continuous 4 second loop through Temp
 		 */
-		if (screen == JSTICK) {
-			//joystick display code
+		if (screen == MAIN) {
+			TFT_DrawString(10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
+			TFT_DrawString(10, 135, "Lab 9", TFT_YELLOW, TFT_BLUE, 2);
+			TFT_DrawString(10, 160, "Jordan Hartung", TFT_GREEN, TFT_BLUE, 2);
+			TFT_DrawString(10, 200, "Jeremy Zacharia", TFT_PURPLE, TFT_BLUE, 2);
+		} else if (screen == JSTICK) {
 			AD1CHSbits.CH0SA = 4; //A1 up and down
 			AD1CON1bits.SAMP = 1;
 			while (!AD1CON1bits.DONE);
@@ -113,11 +112,11 @@ void main(void)
 
 			TFT_FillCircle(xp, yp, rad, TFT_BLUE);
 			TFT_DrawCircle(x, y, rad, TFT_YELLOW);
-
 			xp = x;
 			yp = y;
 
 			sprintf(message, "X: %d.0, Y: %d.0", x, y);
+			//TFT_DrawCircle(120, 200, 111, TFT_YELLOW);
 			TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
 
 			printf("Val: %d\t%d\t%d\t%d\n", valueu, values, x, y);
@@ -126,8 +125,10 @@ void main(void)
 			AD1CON1bits.SAMP = 1;
 			while (!AD1CON1bits.DONE);
 			temp_sense = (double) ADC1BUF0;
+
 			sprintf(message, "Temp in F: %.02f", (temp_sense / 10.0)*(9.0 / 5.0) + 32.0);
 			TFT_DrawString(10, 100, message, TFT_BLACK, TFT_BLUE, 2);
+
 			sample_temp = false;
 		}
 	}
@@ -187,9 +188,11 @@ void MCU_initialize(void)
 	/*
 	 * Global Variable Configuration
 	 */
+	rad = 8;
+	old_screen = 3;
 	mscount = secondcount = 0;
 	sample_temp = true;
-	screen = JSTICK;
+	screen = MAIN;
 
 	/*
 	 * ADC Configuration

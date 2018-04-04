@@ -12,6 +12,11 @@
 //------------------------------------------------------------------------------
 #include "lab08.h"
 
+/*
+ * Function:	map()
+ * Purpose:	Re-proportion a number in a given range to another range
+ */
+
 static long map(long x, long in_min, long in_max, long out_min, long out_max)
 {
 	return(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -24,11 +29,19 @@ static long map(long x, long in_min, long in_max, long out_min, long out_max)
 void main(void)
 {
 
+	/*
+	 * Init
+	 */
 	MCU_initialize();
 	SPI_Init();
 	TFT_Init();
 	TOUCH_Init();
 
+	/*
+	 * Configure TFT 
+	 * -background 
+	 * -static buttons
+	 */
 	TFT_FillRectangle(0, 0, 240, 320, TFT_BLUE); //background color
 	TFT_FillRectangle(0, 0, 75, 80, TFT_LIGHTGREY);
 	TFT_FillRectangle(80, 0, 75, 80, TFT_LIGHTGREY);
@@ -38,10 +51,11 @@ void main(void)
 	TFT_DrawString(88, 38, "STICK", TFT_BLACK, TFT_LIGHTGREY, 2);
 	TFT_DrawString(176, 30, "TEMP", TFT_BLACK, TFT_LIGHTGREY, 2);
 
-
-
 	while (1) {
 
+		/*
+		 * Sense touch coordinates
+		 */
 		TOUCH_GetTouchPoints();
 		if (touch_x > 0 && touch_x < 75 && touch_y > 0 && touch_y < 80) {
 			screen = 0;
@@ -52,7 +66,7 @@ void main(void)
 		}
 
 		switch (screen) {
-		case MAIN: //main sceen
+		case MAIN:
 			if (oldScreen != screen) {
 				TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE);
 				TFT_DrawString(10, 100, "CMPEN 352W", TFT_BLACK, TFT_BLUE, 2);
@@ -61,7 +75,7 @@ void main(void)
 				TFT_DrawString(10, 200, "Jeremy Zacharia", TFT_PURPLE, TFT_BLUE, 2);
 			}
 			break;
-		case JSTICK: //led screen
+		case JSTICK:
 			//Taken care of in screen_task()
 			if (oldScreen != screen) {
 				TFT_FillRectangle(0, 80, 240, 240, TFT_BLUE); //Clear
@@ -78,6 +92,10 @@ void main(void)
 		}
 		oldScreen = screen;
 
+		/*
+		 * Continuous loop through JSTICK
+		 * Continuous 4 second loop through Temp
+		 */
 		if (screen == JSTICK) {
 			//joystick display code
 			AD1CHSbits.CH0SA = 4; //A1 up and down
@@ -89,7 +107,6 @@ void main(void)
 			AD1CON1bits.SAMP = 1;
 			while (!AD1CON1bits.DONE);
 			values = ADC1BUF0;
-
 
 			y = map(1023 - valueu, 0, 1023, 89, 311); //scale
 			x = map(values, 0, 1023, 9, 231); //scale
@@ -116,7 +133,6 @@ void main(void)
 	}
 } // end main()
 
-
 //------------------------------------------------------------------------------
 // Function: MCU_initialize()
 // Params:   void
@@ -127,14 +143,17 @@ void main(void)
 void MCU_initialize(void)
 {
 
-	// Use multi-vector interrupt mode
-
 	INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
 
-	// Configure oscillators
+	/* 
+	 * Configure oscillators
+	 */
 	OSCCONbits.PBDIV = 0b11; // PBCLK is SYSCLK/8 = 10 MHz
 
-	// Init UART 1 to communicate with PC
+	/*
+	 *  Init UART 1 to communicate with PC
+	 *  BAUD = 57600
+	 */
 	U1MODEbits.UEN = 0b00;
 	U1MODEbits.PDSEL = 0b00; // 8-bit data, no parity
 	U1MODEbits.STSEL = 0; // 1 stop bit
@@ -152,49 +171,57 @@ void MCU_initialize(void)
 	IEC0bits.T1IE = 1; // Enable interrupt
 	T1CONbits.ON = 1; // Enable timer
 
-
-	//TIMER4 @ 1ms
+	/*
+	 * Timer 4
+	 * 1ms configuration
+	 */
 	T4CON = 0x00; // Disable timer, prescale = 1:1, source =PBCLK
 	T4CONbits.ON = 1; // enable timer
 	TMR4 = 55536; // Initialize Timer4 value
 
-	// Configure tristates
+	/*
+	 * Tristate configuration
+	 */
 	IO_CS_TRIS = TRIS_OUTPUT; // select for IO expander
 
+	/*
+	 * Global Variable Configuration
+	 */
 	mscount = secondcount = 0;
 	sample_temp = true;
 	screen = JSTICK;
 
-	//ADC
-	AD1PCFGbits.PCFG1 = 0;
-	AD1PCFGbits.PCFG2 = 0;
-	TRISBbits.TRISB1 = 1;
-	TRISBbits.TRISB2 = 1;
+	/*
+	 * ADC Configuration
+	 */
+	AD1PCFGbits.PCFG2 = 0; //AN8
+	AD1PCFGbits.PCFG4 = 0; //AN4
+	AD1PCFGbits.PCFG8 = 0; //AN2
+	TRISBbits.TRISB2 = 1; //AN8
+	TRISBbits.TRISB4 = 1; //AN4
+	TRISBbits.TRISB8 = 1; //AN1
+	//reset all ADC configuration bits
 	AD1CON1 = 0;
 	AD1CON2 = 0;
 	AD1CON3 = 0;
+	//begin ADC configuration
+	AD1CON1bits.FORM = 0; //16-bit integer
+	AD1CON1bits.SSRC = 7; //sample clock is auto convert
+	AD1CON2bits.VCFG = 0; //Vref+ = AVdd; Vref- = AVss
+	AD1CON2bits.CSCNA = 0; //do not scan inputs
+	AD1CON2bits.BUFM = 0; //one 16-word buffer fill
+	AD1CON2bits.ALTS = 0; //always use MUXA
+	AD1CON3bits.ADRC = 0; //ADC clock = PBCLK
+	AD1CON3bits.SAMC = 31; //sample time = max, 31 * Tad
+	AD1CON3bits.ADCS = 63; //Tad = 128 * Tpb = 12.8us @ PBCLK = 10 MHZ
+	AD1CON1bits.ADON = 1; //ADC on
 
-	AD1CON1bits.FORM = 0;
-	AD1CON1bits.SSRC = 7;
-
-	AD1CON2bits.VCFG = 0;
-	AD1CON2bits.CSCNA = 0;
-	AD1CON2bits.BUFM = 0;
-	AD1CON2bits.ALTS = 0;
-
-	AD1CON3bits.ADRC = 0;
-	AD1CON3bits.SAMC = 31;
-	AD1CON3bits.ADCS = 63;
-
-	AD1CON1bits.ADON = 1;
-
-
-	// Enable global interrupts
+	/*
+	 *  Enable global interrupts
+	 */
 	INTEnableInterrupts();
 
-
 } // end MCU_initialize()
-
 
 //------------------------------------------------------------------------------
 // Function: _mon_putc()
@@ -203,8 +230,7 @@ void MCU_initialize(void)
 // Redfine _mon_putc so stdout goes to UART
 //------------------------------------------------------------------------------
 
-void
-_mon_putc(char c)
+void _mon_putc(char c)
 {
 
 	while (U1STAbits.UTXBF); // wait for transmit buffer to be available
@@ -220,19 +246,17 @@ _mon_putc(char c)
 // Interrupt handler for Timer 1
 //------------------------------------------------------------------------------
 
-void __ISR(_TIMER_1_VECTOR, IPL7SOFT)
-Timer1Handler(void)
+void __ISR(_TIMER_1_VECTOR, IPL7SOFT) Timer1Handler(void)
 {
 	IFS0bits.T1IF = 0; // Clear interrupt flag
 	mscount++;
 	if (mscount == 1000) {
 		secondcount++;
-		if (secondcount % 4 == 0) // every 4 seconds
-		{
+		if (secondcount % 4 == 0) {
+			// every 4 seconds
 			sample_temp = true;
 		}
 		mscount = 0;
 	}
-
 }
 

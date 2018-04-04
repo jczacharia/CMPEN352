@@ -72,7 +72,7 @@ bool sample_temp;
 
 // Function prototypes
 void MCU_initialize(void);
-void _mon_putc (char c);
+void _mon_putc(char c);
 void __ISR(_TIMER_1_VECTOR, IPL7SOFT) Timer1Handler(void);
 
 //variables
@@ -82,8 +82,8 @@ uint8_t readData = 0;
 uint8_t ledOnBtn = 0;
 uint8_t ledOffBtn = 0;
 char message[17];
-int x, xp;
-int y, yp;
+int x, xp; // xp = y previous; for state
+int y, yp; // yp = y previous; for state
 uint16_t valueu;
 uint16_t values;
 double temp_sense;
@@ -91,8 +91,8 @@ uint8_t rad = 8; //circle radius
 
 
 //Screen States
-enum screen_t
-{
+
+enum screen_t {
     MAIN,
     JSTICK,
     TEMP
